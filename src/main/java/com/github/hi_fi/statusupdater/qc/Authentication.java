@@ -36,12 +36,11 @@ public class Authentication {
 	}
 
 	/**
-	 * @param username
-	 * @param password
-	 * @return true if authenticated at the end of this method.
-	 * @throws Exception
+	 * @param username QC username
+	 * @param password QC password
+	 * @return Boolean true if authenticated at the end of this method.
 	 *
-	 *             convenience method used by other examples to do their login
+	 * convenience method used by other examples to do their login
 	 */
 	public boolean login(String username, String password) {
 
@@ -54,8 +53,8 @@ public class Authentication {
 	/**
 	 * @param loginUrl
 	 *            to authenticate at
-	 * @param username
-	 * @param password
+	 * @param username QC username
+	 * @param password QC password
 	 */
 	public void login(String loginUrl, String username, String password) {
 		// create a string that looks like:
@@ -65,18 +64,13 @@ public class Authentication {
 				new BasicHeader("Authorization", "Basic " + Base64Encoder.encode(credBytes)));
 	}
 
-	/**
-	 * @return true if logout successful
-	 */
 	public void logout() {
 		RestClient.makeGetCall(Configuration.url + "/qcbin/authentication-point/logout");
 		authenticated = false;
 	}
 
 	/**
-	 * @return null if authenticated.<br>
-	 *         a url to authenticate against if not authenticated.
-	 * @throws Exception
+	 * @return Boolean true if authenticated.<br>
 	 */
 	public boolean isAuthenticated() {
 

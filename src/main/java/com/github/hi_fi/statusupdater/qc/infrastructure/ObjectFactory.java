@@ -39,6 +39,7 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Entities }
      * 
+     * @return Entities instance of {@link Entities }
      */
     public Entities createEntities() {
         return new Entities();
@@ -47,6 +48,7 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Entities.Entity }
      * 
+     * @return Entity an instance of {@link Entities.Entity }
      */
     public Entities.Entity createEntitiesEntity() {
         return new Entities.Entity();
@@ -55,6 +57,7 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Entities.Entity.Fields }
      * 
+     * @return Fields an instance of {@link Entities.Entity.Fields }
      */
     public Entities.Entity.Fields createEntitiesEntityFields() {
         return new Entities.Entity.Fields();
@@ -63,6 +66,7 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Entities.Entity.Fields.Field }
      * 
+     * @return Field an instance of {@link Entities.Entity.Fields.Field } 
      */
     public Entities.Entity.Fields.Field createEntitiesEntityFieldsField() {
         return new Entities.Entity.Fields.Field();

@@ -22,8 +22,8 @@ public class EntityMarshallingUtils {
      * @param xml
      *            the instance xml description
      * @return a deserialization of the xml into an object of type T
-     *           of class Class<T>
-     * @throws javax.xml.bind.JAXBException
+     *           of class Class of type T
+     * @throws javax.xml.bind.JAXBException When parsing unsuccessful
      */
     @SuppressWarnings("unchecked")
     public static <T> T marshal(Class<T> c, String xml) throws JAXBException {
@@ -50,7 +50,7 @@ public class EntityMarshallingUtils {
      * @param o
      *            the instance containing the data to serialize
      * @return a string representation of the data.
-     * @throws Exception
+     * @throws Exception When unmarshalling fails
      */
     @SuppressWarnings("unchecked")
     public static <T> String unmarshal(Class<T> c, Object o) throws Exception {

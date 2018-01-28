@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
  *
  * The following schema fragment specifies the expected content
  * contained within this class.
- *
+ * {@code
  * <complexType>
  *   <simpleContent>
  *     <extension base="<http://www.w3.org/2001/XMLSchema>
@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.*;
  *     </extension>
  *   </simpleContent>
  * </complexType>
- *
+ * }
  */
 
 

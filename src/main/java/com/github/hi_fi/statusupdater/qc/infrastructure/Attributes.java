@@ -11,7 +11,8 @@ import java.util.List;
 
  * The following schema fragment specifies the expected content
  * contained within this class.
- *
+ * 
+ * {@code
  * <complexType>
  *   <complexContent>
  *     <restriction base=
@@ -24,7 +25,7 @@ import java.util.List;
  *     </restriction>
  *   </complexContent>
  * </complexType>
- *
+ * }
  *
 
  */
@@ -50,6 +51,8 @@ public class Attributes {
       *
      * Objects of the following type(s) are allowed in the
      * list {@link Attribute }
+     * 
+     * @return List attributes as List
      *
      *
      */
