@@ -4,6 +4,7 @@ import org.robotframework.javalib.library.AnnotationLibrary;
 
 import com.github.hi_fi.statusupdater.keywords.Listener;
 import com.github.hi_fi.statusupdater.utils.Configuration;
+import com.github.hi_fi.statusupdater.utils.Logger;
 
 public class StatusUpdateLibrary extends AnnotationLibrary  {
 	
@@ -21,6 +22,7 @@ public class StatusUpdateLibrary extends AnnotationLibrary  {
     }
 	
 	public void endTest(String name, Map attrs) {
+	    Logger.logDebug("Stop: "+new Configuration().listenTestStop());
 		if (new Configuration().listenTestStop()) {
 			new Listener().endTest(name, attrs);
 		}

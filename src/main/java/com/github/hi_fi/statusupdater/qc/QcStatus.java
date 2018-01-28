@@ -22,7 +22,7 @@ public enum QcStatus implements IStatus{
 	}
 
 	public int getStatusCode() {
-		//Not valid in Q
+		//Not valid in QC
 		return 0;
 	}
 
