@@ -32,146 +32,148 @@ import com.google.gson.JsonObject;
 @RobotKeywords
 public class Jira {
 
-	private static boolean zapiChecked = false;
+    private static boolean zapiChecked = false;
 
-	public Jira() {
-		if (!zapiChecked && !Robot.getRobotVariable("JIRA_URL", "not set").equals("not set")) {
-			Configuration.url = Robot.getRobotVariable("JIRA_URL");
-			Configuration.password = Robot.getRobotVariable("JIRA_PW");
-			Configuration.username = Robot.getRobotVariable("JIRA_USER");
+    public Jira() {
+        if (!zapiChecked && !Robot.getRobotVariable("JIRA_URL", "not set").equals("not set")) {
+            Configuration.url = Robot.getRobotVariable("JIRA_URL");
+            Configuration.password = Robot.getRobotVariable("JIRA_PW");
+            Configuration.username = Robot.getRobotVariable("JIRA_USER");
 
-			try {
-				this.getLicense();
-				Configuration.testManagementTool = TestManagementTool.JIRA;
-				Configuration.jiraListenersEnabled = new Configuration().anyListenerInUse();
-			} catch (Exception e) {
-				Logger.logError("ZAPI not available, disabling Jira listeners. Error message was: " + e.getMessage());
-				Configuration.jiraListenersEnabled = false;
-			}
-		}
-		zapiChecked = true;
-	}
+            try {
+                this.getLicense();
+                Configuration.testManagementTool = TestManagementTool.JIRA;
+                Configuration.jiraListenersEnabled = true;
+            } catch (Exception e) {
+                Logger.logError("ZAPI not available, disabling Jira listeners. Error message was: " + e.getMessage());
+                Configuration.jiraListenersEnabled = false;
+            }
+        }
+        zapiChecked = true;
+    }
 
-	@RobotKeyword
-	public void logJiraVariables() {
-		Logger.log(Robot.getRobotVariable("JIRA_USER"));
-		Logger.log(Robot.getRobotVariable("JIRA_PW"));
-		Logger.log(Robot.getRobotVariable("JIRA_URL"));
-		Logger.log(Robot.getRobotVariable("JIRA_CONTEXT"));
-	}
+    @RobotKeyword("Logs JIRA required varibles. Note that also PW is written to log.")
+    public void logJiraVariables() {
+        Logger.log(Robot.getRobotVariable("JIRA_USER"));
+        Logger.log(Robot.getRobotVariable("JIRA_PW"));
+        Logger.log(Robot.getRobotVariable("JIRA_URL"));
+        Logger.log(Robot.getRobotVariable("JIRA_CONTEXT"));
+    }
 
-	@RobotKeyword
-	public void getLicense() throws ParseException, IOException {
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/zapi/latest/license";
-		HttpResponse response = RestClient.makeGetCall(URL);
-		Logger.log("Licence information: "
-				+ new GsonBuilder().setPrettyPrinting().create().toJson(EntityUtils.toString(response.getEntity())));
-	}
+    @RobotKeyword("Retrieves and logs Zephyr Licence information. Used also to check that Zephyr is available.")
+    public void getLicense() throws ParseException, IOException {
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/zapi/latest/license";
+        HttpResponse response = RestClient.makeGetCall(URL);
+        Logger.log("Licence information: "
+                + new GsonBuilder().setPrettyPrinting().create().toJson(EntityUtils.toString(response.getEntity())));
+    }
 
-	@RobotKeyword
-	public String createExecution(String cycleId, String projectId, String versionId, String issueId, String assignee) {
-		JsonObject jsonPayload = new JsonObject();
-		jsonPayload.addProperty("cycleId", cycleId);
-		jsonPayload.addProperty("issueId", issueId);
-		jsonPayload.addProperty("projectId", projectId);
-		jsonPayload.addProperty("versionId", versionId);
-		jsonPayload.addProperty("assigneeType", "assignee");
-		jsonPayload.addProperty("assignee", assignee);
+    @RobotKeyword("Created new Jira test execution. With this keyword technical id's of project, version issue and cycle needs to be given."
+            + "\n" + "These values can be assigned to Robot variables with keyword `Update Ids With Jira Key`." + "\n"
+            + "Execution ID is stored to variable EXECUTION_ID, and required when updating execution status.")
+    public String createExecution(String cycleId, String projectId, String versionId, String issueId, String assignee) {
+        JsonObject jsonPayload = new JsonObject();
+        jsonPayload.addProperty("cycleId", cycleId);
+        jsonPayload.addProperty("issueId", issueId);
+        jsonPayload.addProperty("projectId", projectId);
+        jsonPayload.addProperty("versionId", versionId);
+        jsonPayload.addProperty("assigneeType", "assignee");
+        jsonPayload.addProperty("assignee", assignee);
 
-		StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
+        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
 
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/zapi/latest/execution";
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/zapi/latest/execution";
 
-		HttpResponse response = RestClient.makePostCall(URL, payload,
-				new BasicHeader("Content-Type", "application/json"));
-		JsonObject responseJsonObject = ResponseParser.parseResponseToJson(response).getAsJsonObject();
-		String executionId = responseJsonObject.entrySet().iterator().next().getKey();
+        HttpResponse response = RestClient.makePostCall(URL, payload,
+                new BasicHeader("Content-Type", "application/json"));
+        JsonObject responseJsonObject = ResponseParser.parseResponseToJson(response).getAsJsonObject();
+        String executionId = responseJsonObject.entrySet().iterator().next().getKey();
 
-		Robot.setRobotTestVariable("EXECUTION_ID", executionId);
-		return executionId;
-	}
+        Robot.setRobotTestVariable("EXECUTION_ID", executionId);
+        return executionId;
+    }
 
-	@RobotKeyword
-	public void updateTestStepStatus(String step, String status, String message) {
-		JsonObject jsonPayload = new JsonObject();
-		jsonPayload.addProperty("status", ZephyrStatus.valueOf(status.toUpperCase()).getStatusCode());
-		jsonPayload.addProperty("comment", message);
-		StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
+    @RobotKeyword("Updates status of single step in test case.")
+    public void updateTestStepStatus(String step, String status, String message) {
+        JsonObject jsonPayload = new JsonObject();
+        jsonPayload.addProperty("status", ZephyrStatus.valueOf(status.toUpperCase()).getStatusCode());
+        jsonPayload.addProperty("comment", message);
+        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
 
-		String stepId = Robot.getRobotVariable("testSteps").split(";")[Integer.parseInt(step) - 1];
+        String stepId = Robot.getRobotVariable("testSteps").split(";")[Integer.parseInt(step) - 1];
 
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/zapi/latest/stepResult/" + stepId;
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/zapi/latest/stepResult/" + stepId;
 
-		RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
+        RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
 
-		this.uploadAttachment(ZephyrEntities.TESTSTEPRESULT, stepId);
-	}
+        this.uploadAttachment(ZephyrEntities.TESTSTEPRESULT, stepId);
+    }
 
-	public void uploadAttachment(ZephyrEntities entity, String entityId) {
-		Attachment attachment = new Attachment();
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/zapi/latest/attachment?entityId=" + entityId + "&entityType=" + entity.toString();
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		boolean submissionNeeded = false;
-		for (Object createdFile : attachment.getAttachmentList()) {
-			submissionNeeded = true;
-			File uploadableFile = new File(createdFile.toString());
-			builder.addBinaryBody("file", uploadableFile, ContentType.APPLICATION_OCTET_STREAM,
-					uploadableFile.getName());
-		}
+    @RobotKeyword("Returns semicolon separated list of teststep IDs for current testcase under execution.")
+    public String getTestStepIds(String executionId) {
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/zapi/latest/stepResult?executionId=" + executionId;
 
-		if (submissionNeeded) {
-			HttpEntity payload = builder.build();
-			RestClient.makePostUploadCall(URL, payload);
-			attachment.clearAttachments();
-		}
-	}
+        ArrayList<String> testSteps = new ArrayList<String>();
+        JsonArray responseJsonObject = ResponseParser.parseResponseToJson(RestClient.makeGetCall(URL)).getAsJsonArray();
+        for (JsonElement json : responseJsonObject) {
+            testSteps.add(json.getAsJsonObject().get("id").getAsString());
+        }
+        return String.join(";", testSteps);
+    }
 
-	@RobotKeyword
-	public void updateExecutionStatus(ZephyrStatus status) {
-		this.updateExecutionStatus(status, new JsonObject());
-	}
+    public void uploadAttachment(ZephyrEntities entity, String entityId) {
+        Attachment attachment = new Attachment();
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/zapi/latest/attachment?entityId=" + entityId + "&entityType=" + entity.toString();
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        boolean submissionNeeded = false;
+        for (Object createdFile : attachment.getAttachmentList()) {
+            submissionNeeded = true;
+            File uploadableFile = new File(createdFile.toString());
+            builder.addBinaryBody("file", uploadableFile, ContentType.APPLICATION_OCTET_STREAM,
+                    uploadableFile.getName());
+        }
 
-	@RobotKeyword
-	public String getTestStepIds(String executionId) {
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/zapi/latest/stepResult?executionId=" + executionId;
+        if (submissionNeeded) {
+            HttpEntity payload = builder.build();
+            RestClient.makePostUploadCall(URL, payload);
+            attachment.clearAttachments();
+        }
+    }
 
-		ArrayList<String> testSteps = new ArrayList<String>();
-		JsonArray responseJsonObject = ResponseParser.parseResponseToJson(RestClient.makeGetCall(URL)).getAsJsonArray();
-		for (JsonElement json : responseJsonObject) {
-			testSteps.add(json.getAsJsonObject().get("id").getAsString());
-		}
-		return String.join(";", testSteps);
-	}
+    public void updateExecutionStatus(ZephyrStatus status) {
+        this.updateExecutionStatus(status, new JsonObject());
+    }
 
-	public void updateExecutionStatus(ZephyrStatus status, JsonObject jsonPayload) {
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/zapi/latest/execution";
-		URL += "/" + Robot.getRobotVariable("EXECUTION_ID") + "/execute";
-		jsonPayload.addProperty("status", status.getStatusCode());
+    public void updateExecutionStatus(ZephyrStatus status, JsonObject jsonPayload) {
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/zapi/latest/execution";
+        URL += "/" + Robot.getRobotVariable("EXECUTION_ID") + "/execute";
+        jsonPayload.addProperty("status", status.getStatusCode());
 
-		StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
+        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
 
-		RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
-	}
+        RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
+    }
 
-	public void updateIdsWithJiraKey(String jiraKey) {
-		String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-				+ "rest/api/2/search?jql=key%3D" + jiraKey;
-		HttpResponse response = RestClient.makeGetCall(URL);
-		JsonObject responseJsonObject = ResponseParser.parseResponseToJson(response).getAsJsonObject();
-		int resultCount = Integer.parseInt(responseJsonObject.get("total").getAsString());
-		if (resultCount == 1) {
-			JsonObject issueJsonObject = responseJsonObject.getAsJsonArray("issues").get(0).getAsJsonObject();
-			Robot.setRobotTestVariable("issueId", issueJsonObject.get("id").getAsString());
-			Robot.setRobotTestVariable("projectId",
-					issueJsonObject.getAsJsonObject("fields").getAsJsonObject("project").get("id").getAsString());
-		} else {
-			throw new RuntimeException(String.format("Expected only one results, but got %s.", resultCount));
-		}
-	}
+    @RobotKeyword("Updates Issue's technical ID and project's technical ID using JIRA-key")
+    public void updateIdsWithJiraKey(String jiraKey) {
+        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
+                + "rest/api/2/search?jql=key%3D" + jiraKey;
+        HttpResponse response = RestClient.makeGetCall(URL);
+        JsonObject responseJsonObject = ResponseParser.parseResponseToJson(response).getAsJsonObject();
+        int resultCount = Integer.parseInt(responseJsonObject.get("total").getAsString());
+        if (resultCount == 1) {
+            JsonObject issueJsonObject = responseJsonObject.getAsJsonArray("issues").get(0).getAsJsonObject();
+            Robot.setRobotTestVariable("issueId", issueJsonObject.get("id").getAsString());
+            Robot.setRobotTestVariable("projectId",
+                    issueJsonObject.getAsJsonObject("fields").getAsJsonObject("project").get("id").getAsString());
+        } else {
+            throw new RuntimeException(String.format("Expected only one results, but got %s.", resultCount));
+        }
+    }
 }
