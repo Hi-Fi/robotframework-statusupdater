@@ -103,7 +103,7 @@ public class Entities {
      * Objects of the following type(s) are allowed in the list
      * {@link Entities.Entity }
      * 
-     * 
+     * @return List of entities
      */
     public List<Entities.Entity> getEntity() {
         if (entity == null) {
@@ -325,7 +325,7 @@ public class Entities {
              * Objects of the following type(s) are allowed in the list
              * {@link Entities.Entity.Fields.Field }
              * 
-             * 
+             * @return List of entities
              */
             public List<Entities.Entity.Fields.Field> getField() {
                 if (field == null) {
@@ -369,6 +369,7 @@ public class Entities {
                 /**
                  * Gets the value of the value property.
                  * 
+                 * @return value of the value property
                  */
                 public String getValue() {
                     return value;
@@ -377,6 +378,7 @@ public class Entities {
                 /**
                  * Sets the value of the value property.
                  * 
+                 * @param value Value to value property 
                  */
                 public void setValue(String value) {
                     this.value = value;
