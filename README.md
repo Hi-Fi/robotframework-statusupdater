@@ -18,6 +18,46 @@ There're some common variables that control how library works when used as a lis
 | startTestListenerEnabled | Listen test start |
 | stopTestListenerEnabled | Listen test end |
 
+### HP Quality Center / ALM (version 12)
+With Quality Center/ALM, update is done to testcase name's first part (until first whitespace) in the Robot tests.
+
+#### Required variables
+
+| Variable name | Description |
+| ------------- | ----------- |
+| QC_URL | Part of the QC's URL before /qcbin... |
+| QC_USER | User who has rights to specified domain and project and rights to execute tests |
+| QC\_PW | Password for QC\_USER |
+| QC_DOMAIN | Domain to use in QC |
+| QC_PROJECT | Project to use in QC |
+
+#### Statuses
+
+| Robot test status | QC Status | Comment |
+| ------------- | ----------- | ----------- |
+| - | Not Completed | Default status when test execution is created to QC. Practically means that test is started in Robot |
+| PASS | Passed | |
+| FAIL | If test has tag "BLOCKED" (case insensitive), Blocked; Otherwise Failed | |
+
+### Jira with Zephyr
+
+#### Required variables
+
+| Variable name | Description |
+| ------------- | ----------- |
+| JIRA_URL | JIRA's hostname |
+| JIRA\_CONTEXT | Path to Jira. Jira is accessed normally with JIRA\_URL/JIRA\_CONTEXT -address. |
+| JIRA\_USER | User that has rights to create test executions to specified project. |
+| JIRA\_PW | Password for JIRA\_USER |
+
+#### Statuses
+
+| Robot test status | QC Status | Comment |
+| ------------- | ----------- | ----------- |
+| - | Not Completed | Default status when test execution is created to QC. Practically means that test is started in Robot |
+| PASS | Passed | |
+| FAIL | If test has tag "BLOCKED" (case insensitive), Blocked; Otherwise Failed | |
+
 ### Testlink
 With TestLink, update is done with testcase's external ID, which has to be first part of the testcase name in the Robot tests. In the case of failure failure message is written to notes of the TestLink execution.
 
@@ -26,7 +66,7 @@ With TestLink, update is done with testcase's external ID, which has to be first
 | Variable name | Description |
 | ------------- | ----------- |
 | TESTLINK_URL | TestLink's XML-RPC endpoint. With Docker TestLink this is at http://<server>/lib/api/xmlrpc/v1/xmlrpc.php |
-| TESTLINK_API_KEY | API key from the user who should be visible at the automated updates |
+| TESTLINK\_API\_KEY | API key from the user who should be visible at the automated updates |
 | planName | Name of TestLink's test plan containing test case that needs to be updated |
 | projectName | Name of TestLink's project containing test plan containing test case that needs to be updated |
 | buildId | ID number of the build that is executed in Test Plan |
@@ -37,4 +77,4 @@ Updates Testlink only at test end.
 | Robot test status | Testlink Status |
 | ------------- | ----------- |
 | PASS | PASSED |
-| FAIL | If test has tag "BLOCKED", BLOCKED; Otherwise FAILED |
+| FAIL | If test has tag "BLOCKED" (case insensitive), BLOCKED; Otherwise FAILED |

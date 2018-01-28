@@ -19,14 +19,16 @@ public class QC {
 			Configuration.password = Robot.getRobotVariable("QC_PW");
 			Configuration.username = Robot.getRobotVariable("QC_USER");
 			Configuration.testManagementTool = TestManagementTool.QC;
-			Configuration.qcListenersEnabled = new Configuration().anyListenerInUse();
+			Configuration.qcListenersEnabled = true;
 			new Authentication();
 		} else {
 			Configuration.qcListenersEnabled = false;
 		}
 	}
 
-	@RobotKeyword
+	@RobotKeyword("Allows to authenticate to QC using credentals from keyword arguments. "
+	        + "\n"
+	        + "Normally credentials are used from QC_USER and QC_PW variables.")
 	public void loginToQC(String username, String password) {
 		Authentication qc = new Authentication();
 		qc.loginToQC(username, password);
@@ -35,13 +37,18 @@ public class QC {
 		}
 	}
 
-	@RobotKeyword
+	@RobotKeyword("Created new QC execution. Execution is created to testset set in QC_TESTSET variable using "
+	        + "current testcase's name first part (getting name from Robot's variable TEST_NAME). "
+	        + "\n"
+	        + "Also QC_DOMAIN and QC_PROJECT has to be set."
+	        + "\n"
+	        + "Execution ID is stored to variable EXECUTION_ID, and required when updating execution status.")
 	public void createQcExecution() {
 		Execution execution = new Execution(Robot.getRobotVariable("QC_DOMAIN"), Robot.getRobotVariable("QC_PROJECT"));
 		execution.createNewExecution();
 	}
 
-	@RobotKeyword
+	@RobotKeyword("Updated current execution's status. Status is obtained from variable EXECUTION_ID.")
 	public void updateQcExecutionStatus(String statusString) {
 		Execution execution = new Execution(Robot.getRobotVariable("QC_DOMAIN"), Robot.getRobotVariable("QC_PROJECT"));
 		QcStatus status = QcStatus.valueOf(statusString.toUpperCase());
