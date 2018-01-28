@@ -1,12 +1,30 @@
 # robotframework-statusupdater
+
+## Introduction
+
 Updates status of tests to various test management systems
 
-Current code is more of PoC, so work is still needed. 
-
-For Zephyr (Jira) tests can be written against mock endpoint: https://getzephyr.docs.apiary.io/#
+Current code is more of PoC, so work is still needed. Testlink implementation tested with [Bitnami's Container](https://github.com/bitnami/bitnami-docker-testlink). 
 
 ## Usage
 Test management system is recognized from the variables in the scope. If for some reason different suites go to different systems, those variables can be set at Suite level.
+
+If you are using the robotframework-maven-plugin you can
+use this library by adding the following dependency to 
+your pom.xml:
+
+    <dependency>
+        <groupId>com.github.hi-fi</groupId>
+        <artifactId>robotframework-statusupdater</artifactId>
+        <version>0.0.1</version>
+        <scope>test</scope>
+    </dependency>
+
+* More information about this library can be found in the
+  [Keyword Documentation](http://search.maven.org/remotecontent?filepath=com/github/hi-fi/robotframework-statusupdater/0.0.1/robotframework-statusupdater-0.0.1.html).
+* For keyword completion in RIDE you can download this
+  [Library Specs](http://search.maven.org/remotecontent?filepath=com/github/hi-fi/robotframework-statusupdater/0.0.1/robotframework-statusupdater-0.0.1.xml)
+  and place it in your PYTHONPATH.
 
 ### Common
 There're some common variables that control how library works when used as a listener. Note that listerner has to be specified when starting the tests (e.g. [Generic way](http://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#taking-listeners-into-use) and [Java with Maven plugin](http://robotframework.org/MavenPlugin/run-mojo.html#listener)
