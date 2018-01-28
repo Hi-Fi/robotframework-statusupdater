@@ -3,6 +3,7 @@ package com.github.hi_fi.statusupdater.keywords;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.robotframework.javalib.annotation.ArgumentNames;
 import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywords;
 
@@ -40,6 +41,19 @@ public class TestLink {
         } else {
             Configuration.testlinkListenersEnabled = false;
         }
+    }
+    
+    @RobotKeyword
+    @ArgumentNames({ "testcaseExternalId", "status", "notes=Empty" })
+    public void updateTestLinkExecutionStatusWithExternalId(String testcaseExternalId, String status, String...params) {
+        String notes = com.github.hi_fi.javalibbase.Robot.getParamsValue(params, 0, "");
+        ExecutionStatus testlinkStatus = ExecutionStatus.getExecutionStatus(status.charAt(0));
+        String planName = Robot.getRobotVariable("planName", "-1");
+        String projectName = Robot.getRobotVariable("projectName", "-1");
+        Integer buildId = Integer.parseInt(Robot.getRobotVariable("buildId", "-1"));
+        TestCase tc = testlinkJavaApi.getTestCaseByExternalId(testcaseExternalId, null);
+        TestPlan tp = testlinkJavaApi.getTestPlanByName(planName, projectName);
+        testlinkJavaApi.setTestCaseExecutionResult(tc.getId(), null, tp.getId(), testlinkStatus, buildId, null, notes, true, null, null, null, null, null);
     }
 
 }

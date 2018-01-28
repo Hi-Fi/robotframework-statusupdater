@@ -49,9 +49,7 @@ public class Configuration {
 	}
 	
 	public boolean listenTestStop() {
-	    Logger.logDebug(testManagementTool+" "+this.testManagementAvailable());
-	    Logger.logDebug(stopTestListenerEnabled);
-		return this.testManagementAvailable() && true;
+		return this.testManagementAvailable() && stopTestListenerEnabled;
 	} 
 	
 	private boolean testManagementAvailable() {

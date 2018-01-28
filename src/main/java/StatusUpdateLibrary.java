@@ -22,7 +22,6 @@ public class StatusUpdateLibrary extends AnnotationLibrary  {
     }
 	
 	public void endTest(String name, Map attrs) {
-	    Logger.logDebug("Stop: "+new Configuration().listenTestStop());
 		if (new Configuration().listenTestStop()) {
 			new Listener().endTest(name, attrs);
 		}

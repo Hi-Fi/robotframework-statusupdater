@@ -64,20 +64,13 @@ public class Listener {
 			}
 			execution.updateExecutionStatus(qcStatus);
 		} else if (Configuration.testlinkListenersEnabled) {
-		    TestLinkAPI testLink = new TestLink().testlinkJavaApi;
-		    ExecutionStatus testlinkStatus = ExecutionStatus.PASSED;
 		    if (status.equals("FAIL")) {
                 boolean blocked = attrs.get("tags").toString().toUpperCase().contains("BLOCKED");
-                testlinkStatus = blocked ? ExecutionStatus.BLOCKED : ExecutionStatus.FAILED;
+                status = blocked ? "Blocked": "Failed";
             }
 		    String testcaseExternalId = name.split(" ")[0];
-            String planName = Robot.getRobotVariable("planName", "-1");
-            String projectName = Robot.getRobotVariable("projectName", "-1");
-            Integer buildId = Integer.parseInt(Robot.getRobotVariable("buildId", "-1"));
-	        TestCase tc = testLink.getTestCaseByExternalId(testcaseExternalId, null);
-	        TestPlan tp = testLink.getTestPlanByName(planName, projectName);
 	        String notes = attrs.get("message").toString();
-	        testLink.setTestCaseExecutionResult(tc.getId(), null, tp.getId(), testlinkStatus, buildId, null, notes, true, null, null, null, null, null);
+	        new TestLink().updateTestLinkExecutionStatusWithExternalId(testcaseExternalId, status, notes);
 		}
     }
 	
