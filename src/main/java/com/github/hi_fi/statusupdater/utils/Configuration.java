@@ -5,6 +5,7 @@ public class Configuration {
 	private static boolean configurationObtained = false;
 	public static boolean jiraListenersEnabled = false;
 	public static boolean qcListenersEnabled = false;
+	public static boolean testlinkListenersEnabled = false;
 	public static boolean startSuiteListenerEnabled = false;
 	public static boolean stopSuiteListenerEnabled = false;
 	public static boolean startTestListenerEnabled = false;
@@ -12,6 +13,7 @@ public class Configuration {
 	public static String username = "";
 	public static String password = "";
 	public static String url = "";
+	public static String api_key = "";
 	public static TestManagementTool testManagementTool = null;
 	
 	
@@ -51,6 +53,6 @@ public class Configuration {
 	} 
 	
 	private boolean testManagementAvailable() {
-		return jiraListenersEnabled || qcListenersEnabled;
+		return jiraListenersEnabled || qcListenersEnabled || testlinkListenersEnabled;
 	}
 }

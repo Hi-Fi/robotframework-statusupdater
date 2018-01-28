@@ -3,7 +3,6 @@ package com.github.hi_fi.statusupdater.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.python.core.PyList;
 import org.python.core.PyObject;
-import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
 
 public class Robot {
@@ -16,10 +15,10 @@ public class Robot {
 		String robotVarName = String.format("\\${%s}", variableName);
 		String variableValue = defaultValue;
 		try {
-			variableValue = ((PyString) pythonInterpreter.get()
-					.eval("BuiltIn().get_variable_value('" + robotVarName + "','" + defaultValue + "')")).asString();
+			variableValue = (pythonInterpreter.get()
+					.eval("BuiltIn().get_variable_value('" + robotVarName + "','" + defaultValue + "')")).toString();
 		} catch (Exception e) {
-			//just preventing error to be thrown up
+			Logger.logError(e.getMessage());
 		}
 		return variableValue;
 	}

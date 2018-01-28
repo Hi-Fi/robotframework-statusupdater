@@ -4,6 +4,7 @@ import org.robotframework.javalib.library.AnnotationLibrary;
 
 import com.github.hi_fi.statusupdater.keywords.Listener;
 import com.github.hi_fi.statusupdater.utils.Configuration;
+import com.github.hi_fi.statusupdater.utils.Logger;
 
 public class StatusUpdateLibrary extends AnnotationLibrary  {
 	
