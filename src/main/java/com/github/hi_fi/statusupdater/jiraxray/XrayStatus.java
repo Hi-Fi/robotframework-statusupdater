@@ -1,8 +1,8 @@
-package com.github.hi_fi.statusupdater.jira;
+package com.github.hi_fi.statusupdater.jiraxray;
 
 import com.github.hi_fi.statusupdater.interfaces.IStatus;
 
-public enum ZephyrStatus implements IStatus {
+public enum XrayStatus implements IStatus {
 	PASS(1),
     FAIL(2),
     WIP(3),
@@ -11,7 +11,7 @@ public enum ZephyrStatus implements IStatus {
 
     private final int statusCode;
 
-    ZephyrStatus(int statusCode) {
+    XrayStatus(int statusCode) {
         this.statusCode = statusCode;
     }
     

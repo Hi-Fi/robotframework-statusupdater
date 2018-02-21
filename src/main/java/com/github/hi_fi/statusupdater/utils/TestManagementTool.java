@@ -1,7 +1,8 @@
 package com.github.hi_fi.statusupdater.utils;
 
 public enum TestManagementTool {
-	JIRA,
+    JIRAXRAY,
+    JIRAZEPHYR,
 	QC,
 	TESTLINK
 }

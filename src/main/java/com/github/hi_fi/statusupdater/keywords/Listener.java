@@ -2,7 +2,7 @@ package com.github.hi_fi.statusupdater.keywords;
 
 import java.util.Map;
 
-import com.github.hi_fi.statusupdater.jira.ZephyrStatus;
+import com.github.hi_fi.statusupdater.jirazephyr.ZephyrStatus;
 import com.github.hi_fi.statusupdater.qc.Execution;
 import com.github.hi_fi.statusupdater.qc.QcStatus;
 import com.github.hi_fi.statusupdater.utils.Configuration;
@@ -16,12 +16,14 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 
 public class Listener {
     
+    public static final int ROBOT_LISTENER_API_VERSION = 2;
+    
 	public void startSuite(String name, Map attrs) {
     }
 	
 	public void startTest(String name, Map attrs) {
-		if (Configuration.jiraListenersEnabled) {
-			Jira jira = new Jira();
+		if (Configuration.jiraZephyrListenersEnabled) {
+			JiraZephyr jira = new JiraZephyr();
 			String jiraKey = name.split(" ")[0];
 			jira.updateIdsWithJiraKey(jiraKey);
 			String cycleId = Robot.getRobotVariable("cycleId", "-1");
@@ -40,8 +42,8 @@ public class Listener {
 	
 	public void endTest(String name, Map attrs) {
 		String status = attrs.get("status").toString();
-		if (Configuration.jiraListenersEnabled) {
-			Jira jira = new Jira();
+		if (Configuration.jiraZephyrListenersEnabled) {
+			JiraZephyr jira = new JiraZephyr();
 			JsonObject jsonPayload = new JsonObject();
 			if (status == "PASS") {
 				String comment = String.format("Automated test run for test %s", 

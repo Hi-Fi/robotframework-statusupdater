@@ -3,7 +3,8 @@ package com.github.hi_fi.statusupdater.utils;
 public class Configuration {
 	
 	private static boolean configurationObtained = false;
-	public static boolean jiraListenersEnabled = false;
+	public static boolean jiraZephyrListenersEnabled = false;
+	public static boolean jiraXrayListenersEnabled = false;
 	public static boolean qcListenersEnabled = false;
 	public static boolean testlinkListenersEnabled = false;
 	public static boolean startSuiteListenerEnabled = false;
@@ -53,6 +54,6 @@ public class Configuration {
 	} 
 	
 	private boolean testManagementAvailable() {
-		return jiraListenersEnabled || qcListenersEnabled || testlinkListenersEnabled;
+		return jiraXrayListenersEnabled ||jiraZephyrListenersEnabled || qcListenersEnabled || testlinkListenersEnabled;
 	}
 }
