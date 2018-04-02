@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywords;
 
@@ -47,9 +48,15 @@ public class JiraXray {
     public void updateXrayTestStatus(String testCaseKey, String status) throws UnsupportedOperationException, IOException {
         Info info = Info.builder().summary("Robot test execution").description("Automatic execution from Robot Framework").user(Robot.getRobotVariable("JIRAXRAY_USER")).build();
         Test test = Test.builder().testKey(testCaseKey).status(status).build();
-        TestExecution te = TestExecution.builder().info(info).tests(Arrays.asList(test)).testExecutionKey(Robot.getRobotVariable("EXECUTION_ID")).build();
+        TestExecution te = TestExecution.builder().info(info).tests(Arrays.asList(test)).build();
+        if (!Robot.getRobotVariable("EXECUTION_ID", "no_execution_id").equalsIgnoreCase("no_execution_id")) {
+            te.setTestExecutionKey(Robot.getRobotVariable("EXECUTION_ID"));
+        }
         String URL = Robot.getRobotVariable("JIRAXRAY_URL") + Robot.getRobotVariable("JIRAXRAY_CONTEXT")+"/import/execution".toString();
         String jsonPayload = new Gson().toJson(te);
+        Logger.logDebug(URL);
+        Logger.logDebug(jsonPayload);
         HttpResponse response = RestClient.makePostCall(URL, RequestGenerator.createStringEntityFromString(jsonPayload), new BasicHeader("Content-Type", "application/json"));
+        Logger.logDebug(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 }
