@@ -57,16 +57,35 @@ With Quality Center/ALM, update is done to testcase name's first part (until fir
 | PASS | Passed | |
 | FAIL | If test has tag "BLOCKED" (case insensitive), Blocked; Otherwise Failed | |
 
+### Jira with Xray
+
+#### Required variables
+
+| Variable name | Description |
+| ------------- | ----------- |
+| JIRAXRAY_URL | JIRA's hostname |
+| JIRAXRAY\_CONTEXT | Path to Jira. Jira is accessed normally with JIRAXRAY\_URL/JIRAXRAY\_CONTEXT -address. |
+| JIRAXRAY\_USER | User that has rights to create test executions to specified project. |
+| JIRAXRAY\_PW | Password for JIRAXRAY\_USER |
+
+#### Statuses
+
+| Robot test status | QC Status | Comment |
+| ------------- | ----------- | ----------- |
+| - | Not Completed | Default status when test execution is created to QC. Practically means that test is started in Robot |
+| PASS | Passed | |
+| FAIL | If test has tag "BLOCKED" (case insensitive), Blocked; Otherwise Failed | |
+
 ### Jira with Zephyr
 
 #### Required variables
 
 | Variable name | Description |
 | ------------- | ----------- |
-| JIRA_URL | JIRA's hostname |
-| JIRA\_CONTEXT | Path to Jira. Jira is accessed normally with JIRA\_URL/JIRA\_CONTEXT -address. |
-| JIRA\_USER | User that has rights to create test executions to specified project. |
-| JIRA\_PW | Password for JIRA\_USER |
+| JIRAZEPHYR_URL | JIRA's hostname |
+| JIRAZEPHYR\_CONTEXT | Path to Jira. Jira is accessed normally with JIRAZEPHYR\_URL/JIRAZEPHYR\_CONTEXT -address. |
+| JIRAZEPHYR\_USER | User that has rights to create test executions to specified project. |
+| JIRAZEPHYR\_PW | Password for JIRAZEPHYR\_USER |
 
 #### Statuses
 

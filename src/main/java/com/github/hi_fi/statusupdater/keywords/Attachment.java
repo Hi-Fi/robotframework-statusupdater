@@ -17,7 +17,7 @@ public class Attachment {
 		attachmentList = new ArrayList<String>();
 	}
 	
-	@RobotKeyword("Add attachment (full path to file) to list of attachments to be submitted with testcase. Currently implemented for Jira when submitting test specific results and for Testlink's executions.")
+	@RobotKeyword("Add attachment (full path to file) to list of attachments to be submitted with testcase. Currently implemented for JiraZephyr when submitting test specific results and for Testlink's executions.")
 	@ArgumentNames({"attachment"})
 	public void addAttachmentToList(String attachment) {
 		attachmentList.add(attachment);

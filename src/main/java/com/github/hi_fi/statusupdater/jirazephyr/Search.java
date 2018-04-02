@@ -1,4 +1,4 @@
-package com.github.hi_fi.statusupdater.jira;
+package com.github.hi_fi.statusupdater.jirazephyr;
 
 import org.apache.http.HttpResponse;
 
