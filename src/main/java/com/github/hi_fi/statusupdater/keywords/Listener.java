@@ -73,6 +73,9 @@ public class Listener {
 		    String testcaseExternalId = name.split(" ")[0];
 	        String notes = attrs.get("message").toString();
 	        new TestLink().updateTestLinkExecutionStatusWithExternalId(testcaseExternalId, status, notes);
+		} else if (Configuration.jiraXrayListenersEnabled) {
+		    String testcaseJiraKey = name.split(" ")[0];
+		    new JiraXray().importXrayTestExecution(testcaseJiraKey, status);
 		}
     }
 	
