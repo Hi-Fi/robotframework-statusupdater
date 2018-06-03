@@ -1,31 +1,26 @@
 package com.github.hi_fi.statusupdater.keywords;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
 import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywords;
 
+import com.github.hi_fi.httpclient.RestClient;
+import com.github.hi_fi.httpclient.domain.Authentication;
 import com.github.hi_fi.statusupdater.jirazephyr.Execution;
 import com.github.hi_fi.statusupdater.jirazephyr.ZephyrEntities;
 import com.github.hi_fi.statusupdater.jirazephyr.ZephyrStatus;
 import com.github.hi_fi.statusupdater.utils.Configuration;
 import com.github.hi_fi.statusupdater.utils.Logger;
-import com.github.hi_fi.statusupdater.utils.RequestGenerator;
 import com.github.hi_fi.statusupdater.utils.ResponseParser;
-import com.github.hi_fi.statusupdater.utils.RestClient;
 import com.github.hi_fi.statusupdater.utils.Robot;
 import com.github.hi_fi.statusupdater.utils.TestManagementTool;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,12 +32,16 @@ public class JiraZephyr {
 
     public JiraZephyr() {
         if (!zapiChecked && !Robot.getRobotVariable("JIRAZEPHYR_URL", "not set").equals("not set")) {
-            Configuration.url = Robot.getRobotVariable("JIRAZEPHYR_URL");
+            Configuration.url = Robot.getRobotVariable("JIRAZEPHYR_URL")+Robot.getRobotVariable("JIRAZEPHYR_CONTEXT");
             Configuration.password = Robot.getRobotVariable("JIRAZEPHYR_PW");
             Configuration.username = Robot.getRobotVariable("JIRAZEPHYR_USER");
 
             try {
-                this.getLicense();
+                RestClient rc = new RestClient();
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json");
+                rc.createSession("JIRAZEPHYR", Configuration.url, headers, Authentication.getAuthentication(Arrays.asList(Configuration.username, Configuration.password)), "false", false);
+                this.checkZephyrAvailability();
                 Configuration.testManagementTool = TestManagementTool.JIRAZEPHYR;
                 Configuration.jiraZephyrListenersEnabled = true;
             } catch (Exception e) {
@@ -53,21 +52,24 @@ public class JiraZephyr {
         zapiChecked = true;
     }
 
-    @RobotKeyword("Logs Jira with Zephyr required varibles. Note that also PW is written to log.")
+    @RobotKeyword("Logs Jira with Zephyr required varibles.")
     public void logJiraZephyrVariables() {
         Logger.log(Robot.getRobotVariable("JIRAZEPHYR_USER"));
-        Logger.log(Robot.getRobotVariable("JIRAZEPHYR_PW"));
         Logger.log(Robot.getRobotVariable("JIRAZEPHYR_URL"));
         Logger.log(Robot.getRobotVariable("JIRAZEPHYR_CONTEXT"));
     }
 
-    @RobotKeyword("Retrieves and logs Zephyr Licence information. Used also to check that Zephyr is available.")
-    public void getLicense() throws ParseException, IOException {
-        String URL = Robot.getRobotVariable("JIRAZEPHYR_URL") + Robot.getRobotVariable("JIRAZEPHYR_CONTEXT")
-                + "rest/zapi/latest/license";
-        HttpResponse response = RestClient.makeGetCall(URL);
-        Logger.log("Licence information: "
-                + new GsonBuilder().setPrettyPrinting().create().toJson(EntityUtils.toString(response.getEntity())));
+    /**
+     * Used also to check that Zephyr is available.
+     * @throws ParseException
+     * @throws IOException
+     */
+    public void checkZephyrAvailability() throws ParseException, IOException {
+        RestClient rc = new RestClient();
+        rc.makeGetRequest("JIRAZEPHYR", "rest/zapi/latest/util/teststepExecutionStatus", new HashMap<String, String>(), new HashMap<String, String>(), true);
+        if (rc.getSession("JIRAZEPHYR").getResponse().getStatusLine().getStatusCode() > 400) {
+            throw new RuntimeException(rc.getSession("JIRAZEPHYR").getResponseData().toString());
+        }
     }
 
     @RobotKeyword("Created new Zephyr test execution. With this keyword technical id's of project, version issue and cycle needs to be given."
@@ -82,25 +84,23 @@ public class JiraZephyr {
         JsonObject jsonPayload = new JsonObject();
         jsonPayload.addProperty("status", ZephyrStatus.valueOf(status.toUpperCase()).getStatusCode());
         jsonPayload.addProperty("comment", message);
-        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
 
         String stepId = Robot.getRobotVariable("testSteps").split(";")[Integer.parseInt(step) - 1];
 
-        String URL = Robot.getRobotVariable("JIRAZEPHYR_URL") + Robot.getRobotVariable("JIRAZEPHYR_CONTEXT")
-                + "rest/zapi/latest/stepResult/" + stepId;
-
-        RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
+        RestClient rc = new RestClient();
+        rc.makePutRequest("JIRAZEPHYR", "rest/zapi/latest/stepResult/" + stepId, (Object)jsonPayload, new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), true);
 
         this.uploadAttachment(ZephyrEntities.TESTSTEPRESULT, stepId);
     }
 
     @RobotKeyword("Returns semicolon separated list of teststep IDs for current testcase under execution.")
     public String getTestStepIds(String executionId) {
-        String URL = Robot.getRobotVariable("JIRAZEPHYR_URL") + Robot.getRobotVariable("JIRAZEPHYR_CONTEXT")
-                + "rest/zapi/latest/stepResult?executionId=" + executionId;
-
         ArrayList<String> testSteps = new ArrayList<String>();
-        JsonArray responseJsonObject = ResponseParser.parseResponseToJson(RestClient.makeGetCall(URL)).getAsJsonArray();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("jql", "executionId" + executionId);
+        RestClient rc = new RestClient();
+        rc.makeGetRequest("JIRAZEPHYR", "rest/zapi/latest/stepResult", new HashMap<String, String>(), parameters, true);
+        JsonArray responseJsonObject = ResponseParser.parseStringToJson(rc.getSession("JIRAZEPHYR").getResponseBody()).getAsJsonArray();
         for (JsonElement json : responseJsonObject) {
             testSteps.add(json.getAsJsonObject().get("id").getAsString());
         }
@@ -109,20 +109,19 @@ public class JiraZephyr {
 
     public void uploadAttachment(ZephyrEntities entity, String entityId) {
         Attachment attachment = new Attachment();
-        String URL = Robot.getRobotVariable("JIRAZEPHYR_URL") + Robot.getRobotVariable("JIRAZEPHYR_CONTEXT")
-                + "rest/zapi/latest/attachment?entityId=" + entityId + "&entityType=" + entity.toString();
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         boolean submissionNeeded = false;
+        Map<String, String> files = new HashMap<String, String>();
         for (Object createdFile : attachment.getAttachmentList()) {
             submissionNeeded = true;
-            File uploadableFile = new File(createdFile.toString());
-            builder.addBinaryBody("file", uploadableFile, ContentType.APPLICATION_OCTET_STREAM,
-                    uploadableFile.getName());
+            files.put("file", createdFile.toString());
         }
 
         if (submissionNeeded) {
-            HttpEntity payload = builder.build();
-            RestClient.makePostUploadCall(URL, payload);
+            Map<String, String> parameters = new HashMap<String, String>();
+            parameters.put("entityId", entityId);
+            parameters.put("entityType", entity.toString());
+            RestClient rc = new RestClient();
+            rc.makePostRequest("JIRAZEPHYR", "rest/zapi/latest/attachment", null, new HashMap<String, String>(), new HashMap<String, String>(), files, true);
             attachment.clearAttachments();
         }
     }
@@ -132,22 +131,22 @@ public class JiraZephyr {
     }
 
     public void updateExecutionStatus(ZephyrStatus status, JsonObject jsonPayload) {
-        String URL = Robot.getRobotVariable("JIRAZEPHYR_URL") + Robot.getRobotVariable("JIRAZEPHYR_CONTEXT")
-                + "rest/zapi/latest/execution";
-        URL += "/" + Robot.getRobotVariable("EXECUTION_ID") + "/execute";
+        String URI = "rest/zapi/latest/execution/" + Robot.getRobotVariable("EXECUTION_ID") + "/execute";
         jsonPayload.addProperty("status", status.getStatusCode());
 
-        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
-
-        RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
+        RestClient rc = new RestClient();
+        rc.makePutRequest("JIRAZEPHYR", URI, (Object)jsonPayload, new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), true);
     }
 
     @RobotKeyword("Updates Issue's technical ID and project's technical ID using Jira-key")
     public void updateIdsWithJiraKey(String jiraKey) {
-        String URL = Robot.getRobotVariable("JIRAZEPHYR_URL") + Robot.getRobotVariable("JIRAZEPHYR_CONTEXT")
-                + "rest/api/2/search?jql=key%3D" + jiraKey;
-        HttpResponse response = RestClient.makeGetCall(URL);
-        JsonObject responseJsonObject = ResponseParser.parseResponseToJson(response).getAsJsonObject();
+        String URI = "rest/api/2/search";
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("jql", "key%3D" + jiraKey);
+        RestClient rc = new RestClient();
+        rc.makeGetRequest("JIRAZEPHYR", URI, new HashMap<String, String>(), parameters, true);
+        
+        JsonObject responseJsonObject = ResponseParser.parseStringToJson(rc.getSession("JIRAZEPHYR").getResponseBody()).getAsJsonObject();
         int resultCount = Integer.parseInt(responseJsonObject.get("total").getAsString());
         if (resultCount == 1) {
             JsonObject issueJsonObject = responseJsonObject.getAsJsonArray("issues").get(0).getAsJsonObject();
@@ -155,6 +154,7 @@ public class JiraZephyr {
             Robot.setRobotTestVariable("projectId",
                     issueJsonObject.getAsJsonObject("fields").getAsJsonObject("project").get("id").getAsString());
         } else {
+            Logger.logError(String.format("Expected only one results, but got %s.", resultCount));
             throw new RuntimeException(String.format("Expected only one results, but got %s.", resultCount));
         }
     }

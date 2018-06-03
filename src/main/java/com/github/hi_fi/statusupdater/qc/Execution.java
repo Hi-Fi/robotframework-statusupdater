@@ -2,11 +2,13 @@ package com.github.hi_fi.statusupdater.qc;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
+import com.github.hi_fi.httpclient.RestClient;
 import com.github.hi_fi.statusupdater.interfaces.IExecution;
 import com.github.hi_fi.statusupdater.interfaces.IStatus;
 import com.github.hi_fi.statusupdater.qc.infrastructure.TestInstance;
@@ -14,7 +16,6 @@ import com.github.hi_fi.statusupdater.utils.Configuration;
 import com.github.hi_fi.statusupdater.utils.Logger;
 import com.github.hi_fi.statusupdater.utils.RequestGenerator;
 import com.github.hi_fi.statusupdater.utils.ResponseParser;
-import com.github.hi_fi.statusupdater.utils.RestClient;
 import com.github.hi_fi.statusupdater.utils.Robot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -31,12 +32,11 @@ public class Execution implements IExecution {
 	}
 
 	public String createNewExecution() {
-		String URL = "/qcbin/rest/domains/" + domain + "/projects/" + project + "/runs/";
+		String URI = "/qcbin/rest/domains/" + domain + "/projects/" + project + "/runs/";
 
-		StringEntity payload = RequestGenerator.createStringEntityFromString(this.createTestInstanceMessage(QcStatus.NOT_COMPLETED).toString());
-
-		HttpResponse response = RestClient.makePostCall(Configuration.url + URL, payload, new BasicHeader("Content-Type", "application/json"),
-				new BasicHeader("Accept", "application/json"));
+        RestClient rc = new RestClient();
+        rc.makePostRequest("QC", URI, this.createTestInstanceMessage(QcStatus.NOT_COMPLETED), new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), true);
+        HttpResponse response = rc.getSession("QC").getResponse();
 		String responseString = ResponseParser.parseResponseToString(response);
 		String[] locationHeader = response.getFirstHeader("location").getValue().split("/");
 		String executionId = locationHeader[locationHeader.length-1];
@@ -53,12 +53,12 @@ public class Execution implements IExecution {
 	}
 
 	public void updateExecutionStatus(IStatus status, String comment) {
-		String URL = "/qcbin/rest/domains/" + domain + "/projects/" + project + "/runs/" + Robot.getRobotVariable("EXECUTION_ID");
-		
-		StringEntity payload = RequestGenerator.createStringEntityFromString(this.createTestInstanceMessage(status).toString());
+		String URI = "/qcbin/rest/domains/" + domain + "/projects/" + project + "/runs/" + Robot.getRobotVariable("EXECUTION_ID");
 
-		HttpResponse response = RestClient.makePutCall(Configuration.url + URL, payload, new BasicHeader("Content-Type", "application/json"),
-				new BasicHeader("Accept", "application/json"));
+		RestClient rc = new RestClient();
+        rc.makePostRequest("QC", URI, this.createTestInstanceMessage(status), new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), true);
+        HttpResponse response = rc.getSession("QC").getResponse();
+        
 		Logger.logDebug(ResponseParser.parseResponseToString(response));
 	}
 

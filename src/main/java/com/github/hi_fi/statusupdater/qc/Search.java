@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
 
+import com.github.hi_fi.httpclient.RestClient;
 import com.github.hi_fi.statusupdater.interfaces.ISearch;
 import com.github.hi_fi.statusupdater.qc.infrastructure.TestInstance;
 import com.github.hi_fi.statusupdater.qc.infrastructure.TestInstances;
@@ -14,7 +16,6 @@ import com.github.hi_fi.statusupdater.qc.infrastructure.Entities.Entity;
 import com.github.hi_fi.statusupdater.qc.infrastructure.Entities.Entity.Fields.Field;
 import com.github.hi_fi.statusupdater.utils.Configuration;
 import com.github.hi_fi.statusupdater.utils.ResponseParser;
-import com.github.hi_fi.statusupdater.utils.RestClient;
 import com.github.hi_fi.statusupdater.utils.Robot;
 
 public class Search implements ISearch{
@@ -49,11 +50,18 @@ public class Search implements ISearch{
 	}
 
 	public TestInstances loadTestInstancesList(String qctestSet, String qcDomain, String qcProject) {
-		String URL = Configuration.url + "/qcbin/rest/domains/" + qcDomain + "/projects/" + qcProject
-				+ "/test-instances?query=" + RestClient.urlEncodeString("{contains-test-set.id[" + qctestSet + "]}")
-				+ "&fields=id,test-id&page-size=max";
+		String URI = Configuration.url + "/qcbin/rest/domains/" + qcDomain + "/projects/" + qcProject
+				+ "/test-instances";
+				
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("query", "{contains-test-set.id[" + qctestSet + "]}");
+        parameters.put("fields", "id,test-id");
+        parameters.put("page-size", "max");
+        RestClient rc = new RestClient();
+        rc.makeGetRequest("QC", URI, new HashMap<String, String>(), parameters, true);
+        HttpResponse response = rc.getSession("QC").getResponse();
 
-		List<Entity> entities = ResponseParser.parseResponseToEntities(RestClient.makeGetCall(URL));
+		List<Entity> entities = ResponseParser.parseResponseToEntities(response);
 		List<Integer> testIds = new ArrayList<Integer>();
 		for (Entity entity : entities) {
 			TestInstance testInstance = new TestInstance();
@@ -71,10 +79,14 @@ public class Search implements ISearch{
 		
 		//Test case name loading, as test instances doesn't give names with previous search
 		if (qcTestInstances.size() > 0) {
-			URL = Configuration.url + "/qcbin/rest/domains/" + qcDomain + "/projects/" + qcProject + "/tests?query="
-					+ RestClient.urlEncodeString("{id[" + StringUtils.join(testIds, " or ") + "]}")
-					+ "&fields=id,name&page-size=max";
-			entities = ResponseParser.parseResponseToEntities(RestClient.makeGetCall(URL));
+			URI = Configuration.url + "/qcbin/rest/domains/" + qcDomain + "/projects/" + qcProject + "/tests";
+			parameters = new HashMap<String, String>();
+	        parameters.put("query", "{id[" + StringUtils.join(testIds, " or ") + "]}");
+	        parameters.put("fields", "id,name");
+	        parameters.put("page-size", "max");
+	        rc.makeGetRequest("QC", URI, new HashMap<String, String>(), parameters, true);
+	        response = rc.getSession("QC").getResponse();
+			entities = ResponseParser.parseResponseToEntities(response);
 			for (Entity entity : entities) {
 				int id = -1;
 				String name = "";
