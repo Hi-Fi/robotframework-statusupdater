@@ -78,8 +78,4 @@ public class Listener {
 		    new JiraXray().importXrayTestExecution(testcaseJiraKey, status);
 		}
     }
-	
-	public void message(Map message) {
-		System.out.println("WARN: Listener message");
-    }
 }
