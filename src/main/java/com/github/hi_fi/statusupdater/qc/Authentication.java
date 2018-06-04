@@ -53,8 +53,7 @@ public class Authentication {
 	}
 
 	/**
-	 * @param loginUrl
-	 *            to authenticate at
+	 * @param loginUri to authenticate at
 	 * @param username QC username
 	 * @param password QC password
 	 */
