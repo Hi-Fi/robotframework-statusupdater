@@ -142,7 +142,7 @@ public class JiraZephyr {
     public void updateIdsWithJiraKey(String jiraKey) {
         String URI = "rest/api/2/search";
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("jql", "key%3D" + jiraKey);
+        parameters.put("jql", "key=" + jiraKey);
         RestClient rc = new RestClient();
         rc.makeGetRequest("JIRAZEPHYR", URI, new HashMap<String, String>(), parameters, true);
         
