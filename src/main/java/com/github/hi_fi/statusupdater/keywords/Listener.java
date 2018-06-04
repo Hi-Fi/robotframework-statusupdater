@@ -30,7 +30,7 @@ public class Listener {
 			String projectId = Robot.getRobotVariable("projectId", "-1");
 			String versionId = Robot.getRobotVariable("versionId", "-1");
 			String issueId = Robot.getRobotVariable("issueId", "-1");
-			String assignee = Robot.getRobotVariable("assignee", Robot.getRobotVariable("JIRA_USER"));
+			String assignee = Robot.getRobotVariable("assignee", Robot.getRobotVariable("JIRAZEPHYR_USER"));
 			jira.createExecution(cycleId, projectId, versionId, issueId, assignee);
 			Robot.setRobotTestVariable("testSteps", jira.getTestStepIds(Robot.getRobotVariable("EXECUTION_ID")));
 			jira.updateExecutionStatus(ZephyrStatus.WIP);
