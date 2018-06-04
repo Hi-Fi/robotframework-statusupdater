@@ -16,14 +16,14 @@ your pom.xml:
     <dependency>
         <groupId>com.github.hi-fi</groupId>
         <artifactId>robotframework-statusupdater</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
         <scope>test</scope>
     </dependency>
 
 * More information about this library can be found in the
-  [Keyword Documentation](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.3/robotframework-statusupdater-0.0.3.html).
+  [Keyword Documentation](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.4/robotframework-statusupdater-0.0.4.html).
 * For keyword completion in RIDE you can download this
-  [Library Specs](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.3/robotframework-statusupdater-0.0.3.xml)
+  [Library Specs](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.4/robotframework-statusupdater-0.0.4.xml)
   and place it in your PYTHONPATH.
 
 ### Common
