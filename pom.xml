@@ -271,33 +271,6 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.0.0</version>
 			</plugin>
-			<plugin>
-				<groupId>org.robotframework</groupId>
-				<artifactId>robotframework-maven-plugin</artifactId>
-				<version>1.4.7</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>acceptance-test</goal>
-						</goals>
-						<configuration>
-							<logLevel>DEBUG</logLevel>
-							<extraPathDirectories>
-								<extraPathDirectory>target/robotframework-statusupdater-${project.version}.jar</extraPathDirectory>
-							</extraPathDirectories>
-							<nonCriticalTags>
-								<nonCriticalTag>Non-Critical</nonCriticalTag>
-							</nonCriticalTags>
-						</configuration>
-					</execution>
-					<execution>
-						<id>verifyResults</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 </project>
