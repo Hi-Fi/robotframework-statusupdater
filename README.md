@@ -16,14 +16,14 @@ your pom.xml:
     <dependency>
         <groupId>com.github.hi-fi</groupId>
         <artifactId>robotframework-statusupdater</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
         <scope>test</scope>
     </dependency>
 
 * More information about this library can be found in the
-  [Keyword Documentation](http://search.maven.org/remotecontent?filepath=com/github/hi-fi/robotframework-statusupdater/0.0.2/robotframework-statusupdater-0.0.2.html).
+  [Keyword Documentation](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.3/robotframework-statusupdater-0.0.3.html).
 * For keyword completion in RIDE you can download this
-  [Library Specs](http://search.maven.org/remotecontent?filepath=com/github/hi-fi/robotframework-statusupdater/0.0.2/robotframework-statusupdater-0.0.2.xml)
+  [Library Specs](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.3/robotframework-statusupdater-0.0.3.xml)
   and place it in your PYTHONPATH.
 
 ### Common
@@ -86,6 +86,8 @@ With Quality Center/ALM, update is done to testcase name's first part (until fir
 | JIRAZEPHYR\_CONTEXT | Path to Jira. Jira is accessed normally with JIRAZEPHYR\_URL/JIRAZEPHYR\_CONTEXT -address. |
 | JIRAZEPHYR\_USER | User that has rights to create test executions to specified project. |
 | JIRAZEPHYR\_PW | Password for JIRAZEPHYR\_USER |
+| cycleId | Zephyr cycle ID. Can be fetched with REST API call (not visible at UI)  |
+| versionId | Zephyr version ID. Can be fetched with REST API call (not visible at UI)  |
 
 #### Statuses
 
