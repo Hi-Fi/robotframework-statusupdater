@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.hi-fi</groupId>
 	<artifactId>robotframework-statusupdater</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>robotframework-statusupdater</name>
@@ -74,7 +75,7 @@
 		<dependency>
 			<groupId>com.github.hi-fi</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>0.0.4</version>
+			<version>0.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -269,33 +270,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.0.0</version>
-			</plugin>
-			<plugin>
-				<groupId>org.robotframework</groupId>
-				<artifactId>robotframework-maven-plugin</artifactId>
-				<version>1.4.7</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>acceptance-test</goal>
-						</goals>
-						<configuration>
-							<logLevel>DEBUG</logLevel>
-							<extraPathDirectories>
-								<extraPathDirectory>target/robotframework-statusupdater-${project.version}.jar</extraPathDirectory>
-							</extraPathDirectories>
-							<nonCriticalTags>
-								<nonCriticalTag>Non-Critical</nonCriticalTag>
-							</nonCriticalTags>
-						</configuration>
-					</execution>
-					<execution>
-						<id>verifyResults</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

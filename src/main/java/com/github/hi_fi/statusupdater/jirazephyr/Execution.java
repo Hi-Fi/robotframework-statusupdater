@@ -1,14 +1,17 @@
 package com.github.hi_fi.statusupdater.jirazephyr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 
+import com.github.hi_fi.httpclient.RestClient;
 import com.github.hi_fi.statusupdater.interfaces.IExecution;
 import com.github.hi_fi.statusupdater.interfaces.IStatus;
 import com.github.hi_fi.statusupdater.utils.RequestGenerator;
 import com.github.hi_fi.statusupdater.utils.ResponseParser;
-import com.github.hi_fi.statusupdater.utils.RestClient;
 import com.github.hi_fi.statusupdater.utils.Robot;
 import com.google.gson.JsonObject;
 
@@ -19,7 +22,7 @@ public class Execution implements IExecution {
         String projectId = Robot.getRobotVariable("projectId", "-1");
         String versionId = Robot.getRobotVariable("versionId", "-1");
         String issueId = Robot.getRobotVariable("issueId", "-1");
-        String assignee = Robot.getRobotVariable("assignee", Robot.getRobotVariable("JIRA_USER"));
+        String assignee = Robot.getRobotVariable("assignee", Robot.getRobotVariable("JIRAZEPHYR_USER"));
         
         return this.createNewExecution(cycleId, projectId, versionId, issueId, assignee);
     }
@@ -33,13 +36,9 @@ public class Execution implements IExecution {
         jsonPayload.addProperty("assigneeType", "assignee");
         jsonPayload.addProperty("assignee", assignee);
 
-        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
-
-        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-                + "rest/zapi/latest/execution";
-
-        HttpResponse response = RestClient.makePostCall(URL, payload);
-        JsonObject responseJsonObject = ResponseParser.parseResponseToJson(response).getAsJsonObject();
+        RestClient rc = new RestClient();
+        rc.makePostRequest("JIRAZEPHYR", "rest/zapi/latest/execution", (Object)jsonPayload, new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), true);
+        JsonObject responseJsonObject = ResponseParser.parseStringToJson(rc.getSession("JIRAZEPHYR").getResponseBody()).getAsJsonObject();
         String executionId = responseJsonObject.entrySet().iterator().next().getKey();
 
         Robot.setRobotTestVariable("EXECUTION_ID", executionId);
@@ -53,14 +52,10 @@ public class Execution implements IExecution {
     public void updateExecutionStatus(IStatus status, String comment) {
         JsonObject jsonPayload = new JsonObject();
         jsonPayload.addProperty("comment", comment);
-        String URL = Robot.getRobotVariable("JIRA_URL") + Robot.getRobotVariable("JIRA_CONTEXT")
-                + "rest/zapi/latest/execution";
-        URL += "/" + Robot.getRobotVariable("EXECUTION_ID") + "/execute";
         jsonPayload.addProperty("status", status.getStatusCode());
 
-        StringEntity payload = RequestGenerator.createStringEntityFromString(jsonPayload.toString());
-
-        RestClient.makePutCall(URL, payload, new BasicHeader("Content-Type", "application/json"));
+        RestClient rc = new RestClient();
+        rc.makePutRequest("JIRAZEPHYR", "rest/zapi/latest/execution/" + Robot.getRobotVariable("EXECUTION_ID") + "/execute", (Object)jsonPayload, new HashMap<String, String>(), new HashMap<String, String>(), new HashMap<String, String>(), true);
     }
 
 }

@@ -76,5 +76,14 @@ public class ResponseParser {
 					String.format("IO Error in response parsing. Error message: %s", e.getMessage()));
 		}
 	}
+	
+   public static JsonElement parseStringToJson(String responseString) {
+        try {
+            return new JsonParser().parse(responseString);
+        } catch (JsonSyntaxException e) {
+            throw new RuntimeException(String.format("Parsing error when trying to parse %s. \nError message was %s.",
+                    responseString, e.getMessage()));
+        }
+    }
 
 }

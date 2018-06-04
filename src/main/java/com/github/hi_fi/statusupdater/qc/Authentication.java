@@ -1,11 +1,13 @@
 package com.github.hi_fi.statusupdater.qc;
 
-import org.apache.http.message.BasicHeader;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.robotframework.javalib.annotation.RobotKeywords;
 
+import com.github.hi_fi.httpclient.RestClient;
 import com.github.hi_fi.statusupdater.qc.infrastructure.Base64Encoder;
 import com.github.hi_fi.statusupdater.utils.Configuration;
-import com.github.hi_fi.statusupdater.utils.RestClient;
 import com.github.hi_fi.statusupdater.utils.TestManagementTool;
 
 @RobotKeywords
@@ -45,27 +47,29 @@ public class Authentication {
 	public boolean login(String username, String password) {
 
 		if (!this.isAuthenticated()) {
-			this.login(Configuration.url + this.loginPathQC12, username, password);
+			this.login(this.loginPathQC12, username, password);
 		}
 		return true;
 	}
 
 	/**
-	 * @param loginUrl
-	 *            to authenticate at
+	 * @param loginUri to authenticate at
 	 * @param username QC username
 	 * @param password QC password
 	 */
-	public void login(String loginUrl, String username, String password) {
+	public void login(String loginUri, String username, String password) {
 		// create a string that looks like:
 		// "Basic ((username:password)<as bytes>)<64encoded>"
 		byte[] credBytes = (username + ":" + password).getBytes();
-		RestClient.makePostCall(loginUrl, null,
-				new BasicHeader("Authorization", "Basic " + Base64Encoder.encode(credBytes)));
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Authorization", "Basic " + Base64Encoder.encode(credBytes));
+        RestClient rc = new RestClient();
+        rc.makePostRequest("JIRAZEPHYR", loginUri, null, new HashMap<String, String>(), headers, new HashMap<String, String>(), true);
 	}
 
 	public void logout() {
-		RestClient.makeGetCall(Configuration.url + "/qcbin/authentication-point/logout");
+	    RestClient rc = new RestClient();
+        rc.makeGetRequest("QC", "/qcbin/authentication-point/logout", new HashMap<String, String>(), new HashMap<String, String>(), true);
 		authenticated = false;
 	}
 
@@ -74,10 +78,11 @@ public class Authentication {
 	 */
 	public boolean isAuthenticated() {
 
-		String isAuthenticateUrl = Configuration.url + "/qcbin/rest/is-authenticated";
+		String isAuthenticateUri = "/qcbin/rest/is-authenticated";
 
 		try {
-			RestClient.makeGetCall(isAuthenticateUrl);
+		    RestClient rc = new RestClient();
+	        rc.makeGetRequest("QC", isAuthenticateUri, new HashMap<String, String>(), new HashMap<String, String>(), true);
 			return true;
 		} catch (Exception e) {
 			return false;

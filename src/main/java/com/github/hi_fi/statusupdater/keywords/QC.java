@@ -1,8 +1,12 @@
 package com.github.hi_fi.statusupdater.keywords;
 
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywords;
 
+import com.github.hi_fi.httpclient.RestClient;
 import com.github.hi_fi.statusupdater.qc.Authentication;
 import com.github.hi_fi.statusupdater.qc.Execution;
 import com.github.hi_fi.statusupdater.qc.QcStatus;
@@ -15,10 +19,12 @@ public class QC {
 
 	public QC() {
 		if (!Robot.getRobotVariable("QC_URL", "not set").equals("not set")) {
-			Configuration.url = Robot.getRobotVariable("QC_URL");
+			Configuration.url = Robot.getRobotVariable("QC_URL")+Robot.getRobotVariable("QC_CONTEXT");
 			Configuration.password = Robot.getRobotVariable("QC_PW");
 			Configuration.username = Robot.getRobotVariable("QC_USER");
 			Configuration.testManagementTool = TestManagementTool.QC;
+            RestClient rc = new RestClient();
+            rc.createSession("QC", Configuration.url, new HashMap<String, String>(), null, "false", false);
 			Configuration.qcListenersEnabled = true;
 			new Authentication();
 		} else {
