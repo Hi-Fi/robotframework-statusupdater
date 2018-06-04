@@ -59,12 +59,7 @@ public class JiraZephyr {
         Logger.log(Robot.getRobotVariable("JIRAZEPHYR_CONTEXT"));
     }
 
-    /**
-     * Used also to check that Zephyr is available.
-     * @throws ParseException
-     * @throws IOException
-     */
-    public void checkZephyrAvailability() throws ParseException, IOException {
+    public void checkZephyrAvailability() {
         RestClient rc = new RestClient();
         rc.makeGetRequest("JIRAZEPHYR", "rest/zapi/latest/util/teststepExecutionStatus", new HashMap<String, String>(), new HashMap<String, String>(), true);
         if (rc.getSession("JIRAZEPHYR").getResponse().getStatusLine().getStatusCode() > 400) {
