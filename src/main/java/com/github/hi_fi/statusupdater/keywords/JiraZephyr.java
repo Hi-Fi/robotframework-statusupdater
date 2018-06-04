@@ -97,7 +97,7 @@ public class JiraZephyr {
     public String getTestStepIds(String executionId) {
         ArrayList<String> testSteps = new ArrayList<String>();
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("jql", "executionId" + executionId);
+        parameters.put("executionId", executionId);
         RestClient rc = new RestClient();
         rc.makeGetRequest("JIRAZEPHYR", "rest/zapi/latest/stepResult", new HashMap<String, String>(), parameters, true);
         JsonArray responseJsonObject = ResponseParser.parseStringToJson(rc.getSession("JIRAZEPHYR").getResponseBody()).getAsJsonArray();
