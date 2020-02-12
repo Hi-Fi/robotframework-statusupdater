@@ -21,9 +21,9 @@ your pom.xml:
     </dependency>
 
 * More information about this library can be found in the
-  [Keyword Documentation](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.4/robotframework-statusupdater-0.0.4.html).
+  [Keyword Documentation](https://repo1.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.4/robotframework-statusupdater-0.0.4.html).
 * For keyword completion in RIDE you can download this
-  [Library Specs](http://central.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.4/robotframework-statusupdater-0.0.4.xml)
+  [Library Specs](https://repo1.maven.org/maven2/com/github/hi-fi/robotframework-statusupdater/0.0.4/robotframework-statusupdater-0.0.4.xml)
   and place it in your PYTHONPATH.
 
 ### Common
